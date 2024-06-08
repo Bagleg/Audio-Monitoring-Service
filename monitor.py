@@ -3,6 +3,7 @@ import time
 from math import log10
 import audioop  
 import sys
+from win10toast import ToastNotifier
 
 # Set base parameters
 p = pyaudio.PyAudio()
@@ -32,16 +33,18 @@ stream.start_stream()
 
 strikes = 0
 threshold = sys.argv[1]
+toaster = ToastNotifier()
 
 # Program loop
 while stream.is_active(): 
     db = 20 * log10(rms)
-    print(f"RMS: {rms} DB: {db}") 
+    #print(f"RMS: {rms} DB: {db}") 
     if db > float(threshold) and int(strikes) == 3:
-        print("Too Loud!")
+        toaster.show_toast("You are being a little loud", "Try to keep it down a little", duration=10)
         strikes = 0
     elif db > float(threshold):
         strikes += 1
+        print("Strike number: ", strikes)
     # refresh every 0.3 seconds 
     time.sleep(0.3)
 
