@@ -32,22 +32,22 @@ stream = p.open(format=p.get_format_from_width(WIDTH),
 
 stream.start_stream()
 
-strikes = 0
+# Set strikes to -1 to account for the first strike that occurs on launch
+strikes = -1
 threshold = sys.argv[1]
 toaster = ToastNotifier()
 # Program loop
 while stream.is_active(): 
     db = 20 * log10(rms)
-    #print(f"RMS: {rms} DB: {db}") 
     if db > float(threshold) and int(strikes) == 3:
         playsound('sound.mp3')
-        toaster.show_toast("You are being a little loud", "Try to keep it down a little", duration=10)
+        toaster.show_toast("You are being a bit loud", "Try to keep it down a little", duration=10)
         strikes = 0
     elif db > float(threshold):
         strikes += 1
         print("Strike number: ", strikes)
     # refresh every 0.3 seconds 
-    time.sleep(0.1)
+    time.sleep(0.3)
 
 # Clean up
 stream.stop_stream()
