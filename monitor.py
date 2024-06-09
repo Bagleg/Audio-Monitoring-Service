@@ -20,7 +20,6 @@ def callback(in_data, frame_count, time_info, status):
     rms = audioop.rms(in_data, WIDTH) / 32767
     return in_data, pyaudio.paContinue
 
-
 # Start stream
 stream = p.open(format=p.get_format_from_width(WIDTH),
                 input_device_index=DEVICE,
@@ -29,14 +28,15 @@ stream = p.open(format=p.get_format_from_width(WIDTH),
                 input=True,
                 output=False,
                 stream_callback=callback)
-
 stream.start_stream()
 
 # Set strikes to -1 to account for the first strike that occurs on launch
 strikes = -1
+# Grab the upper limit from command line
 threshold = sys.argv[1]
+
+# Set up toast-- begin loop
 toaster = ToastNotifier()
-# Program loop
 while stream.is_active(): 
     db = 20 * log10(rms)
     if db > float(threshold) and int(strikes) == 3:
@@ -52,5 +52,4 @@ while stream.is_active():
 # Clean up
 stream.stop_stream()
 stream.close()
-
 p.terminate()
